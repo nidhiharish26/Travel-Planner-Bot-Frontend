@@ -31,7 +31,7 @@ function App() {
     setStructuredData(null);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/travel`, {
         destination,
         days,
         mode,
@@ -170,4 +170,5 @@ function App() {
 }
 
 export default App;
+
 
