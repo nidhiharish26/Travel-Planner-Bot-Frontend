@@ -8,7 +8,7 @@ function App() {
   const [plan, setPlan] = useState(null);
   const [structuredData, setStructuredData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState("structured"); // structured | prompt
+  const [mode] = useState("structured"); // structured | prompt
 
   /*************  ✨ Windsurf Command 🌟  *************/
   const fetchTravelPlan = async (e) => {
@@ -170,3 +170,4 @@ function App() {
 }
 
 export default App;
+
