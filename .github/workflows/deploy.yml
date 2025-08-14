@@ -27,6 +27,8 @@ jobs:
       # Step 4: Build the React app
       - name: Build project
         run: npm run build
+        env:
+              REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
       # Step 5: Configure AWS credentials
       - name: Configure AWS Credentials
