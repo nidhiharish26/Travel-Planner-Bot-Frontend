@@ -3,41 +3,49 @@ name: Deploy React App to S3
 on:
   push:
     branches:
-      - main   # Trigger only when pushing to main branch
+      - main   # Trigger on push to main
 
 jobs:
   deploy:
-    runs-on: windows-latest   # Changed from ubuntu-latest to windows-latest
+    runs-on: windows-latest
 
     steps:
-      # Step 1: Checkout your repository code
+      # 1️⃣ Checkout repo
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js for React build
+      # 2️⃣ Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '^19.1.1' # Make sure this matches your React project's version
+          node-version: '^19.1.1'  # Match your local Node version
 
-      # Step 3: Install dependencies
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Build the React app
+      # 4️⃣ Build React app with backend API URL
       - name: Build project
         run: npm run build
         env:
-              REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
-      # Step 5: Configure AWS credentials
+      # 5️⃣ Configure AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2 # Change to your AWS region
+          aws-region: us-east-2  # Update to your region
 
-      # Step 6: Deploy to S3 bucket
+      # 6️⃣ Deploy build to S3
       - name: Deploy to S3
         run: aws s3 sync build/ s3://travel-planner-bot --delete
+
+      # 7️⃣ Invalidate CloudFront cache
+      - name: Invalidate CloudFront
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
